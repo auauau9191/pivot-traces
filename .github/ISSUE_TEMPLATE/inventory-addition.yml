@@ -1,0 +1,21 @@
+name: Inventory addition
+description: Tell us about a public detection that is missing from the coverage inventory
+labels: [inventory]
+body:
+  - type: input
+    id: tool
+    attributes: {label: Tool the detection covers}
+    validations: {required: true}
+  - type: input
+    id: rule
+    attributes: {label: Rule title and source}
+    validations: {required: true}
+  - type: input
+    id: link
+    attributes: {label: Link to the rule}
+    validations: {required: true}
+  - type: textarea
+    id: keys
+    attributes:
+      label: What the rule keys on
+      description: File name, command line, network field, behaviour. Leave empty if you have not read it.

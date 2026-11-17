@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build docs/results.md from tests/matrix.csv.
+"""Build docs/results.md and docs/results.json from tests/matrix.csv.
 
 Usage: python3 scripts/matrix_report.py [--check]
   --check  exit 1 if docs/results.md is out of date or the CSV is invalid (for CI)
 """
 import csv
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -12,9 +13,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "tests" / "matrix.csv"
 OUT_PATH = ROOT / "docs" / "results.md"
+JSON_PATH = ROOT / "docs" / "results.json"
 
 FIELDS = ["tool", "version", "os", "scenario", "variant", "detection_id",
-          "detection_source", "result", "evidence", "date", "notes"]
+          "detection_source", "result", "evidence", "date", "contributor",
+          "telemetry", "notes"]
 VARIANTS = ["V0", "V1", "V2", "V3", "V4"]
 RESULTS = {"fired", "missed", "not-applicable"}
 MARK = {"fired": "fired", "missed": "**missed**", "not-applicable": "n/a"}
@@ -33,6 +36,9 @@ def load():
                 errors.append(f"line {n}: variant must be one of {VARIANTS}")
             if row["result"] not in RESULTS:
                 errors.append(f"line {n}: result must be one of {sorted(RESULTS)}")
+            for required in ("tool", "version", "detection_id", "date", "contributor"):
+                if not (row[required] or "").strip():
+                    errors.append(f"line {n}: {required} is required")
             if row["result"] != "not-applicable":
                 ev = row["evidence"].strip()
                 if not ev:
@@ -55,18 +61,20 @@ def render(rows):
     fired = sum(r["result"] == "fired" for r in rows)
     missed = sum(r["result"] == "missed" for r in rows)
     out.append(f"**{len(rows)} test cases: {fired} fired, {missed} missed.**\n")
+    out.append("_Read with [principles.md](principles.md): a result is one lab on one "
+               "date. It does not rank products or prove a false-positive rate._\n")
     by_tool = defaultdict(list)
     for r in rows:
         by_tool[r["tool"]].append(r)
     for tool in sorted(by_tool):
         out.append(f"\n## {tool}\n")
-        out.append("| Detection | Source | Version | OS | Scenario | "
+        out.append("| Detection | Source | Version | OS | Scenario | By | "
                    + " | ".join(VARIANTS) + " |")
-        out.append("|---|---|---|---|---|" + "---|" * len(VARIANTS))
+        out.append("|---|---|---|---|---|---|" + "---|" * len(VARIANTS))
         groups = defaultdict(dict)
         for r in by_tool[tool]:
             key = (r["detection_id"], r["detection_source"], r["version"],
-                   r["os"], r["scenario"])
+                   r["os"], r["scenario"], r["contributor"])
             groups[key][r["variant"]] = r
         for key in sorted(groups):
             cells = [cell(groups[key][v]) if v in groups[key] else "-"
@@ -81,13 +89,17 @@ def main():
         print("\n".join(errors), file=sys.stderr)
         return 1
     text = render(rows)
+    data = json.dumps(rows, indent=2) + "\n"
     if "--check" in sys.argv:
-        if OUT_PATH.read_text(encoding="utf-8") != text:
-            print("docs/results.md is out of date; run scripts/matrix_report.py",
+        stale = (not JSON_PATH.is_file()
+                 or JSON_PATH.read_text(encoding="utf-8") != data)
+        if stale or OUT_PATH.read_text(encoding="utf-8") != text:
+            print("docs/results.md or results.json is out of date; run scripts/matrix_report.py",
                   file=sys.stderr)
             return 1
         return 0
     OUT_PATH.write_text(text, encoding="utf-8")
+    JSON_PATH.write_text(data, encoding="utf-8")
     print(f"wrote {OUT_PATH.relative_to(ROOT)} ({len(rows)} test cases)")
     return 0
 
