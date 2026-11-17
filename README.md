@@ -1,58 +1,72 @@
 # pivot-traces
 
-**Do public detections for pivoting tools actually fire? A tested, evidence-backed reference.**
+**An open, evidence-backed record of whether public detections for tunnelling and pivoting tools actually fire.**
 
-Tunnelling and pivoting tools such as Chisel, Ligolo-ng and SSH port forwarding are standard in
-penetration tests and are also used by real intruders. Plenty of indicator lists and detection
-rules for them are public. Very few come with proof: the tool version tested, the logs and packet
-captures behind each claim, or a record of what happens when an operator renames the binary or
-changes a port.
+Tunnelling tools such as Chisel, Ligolo-ng, Cloudflared, ngrok and SSH port forwarding are used in
+penetration tests and in real intrusions. Public detection rules and indicator lists exist for
+many of them. Very few come with proof: the tool version tested, the logs and packet captures
+behind each claim, or a record of what happens when an operator renames a file or changes a port.
 
-This repository tests those claims in a small reproducible lab and publishes the results.
+This project collects that proof, in one format, from anyone who can run a lab.
 
-> **Status: in progress.** Nothing in this repository is verified until it appears in
-> [`docs/results.md`](docs/results.md) with evidence. Pages marked `UNVERIFIED` list claims
-> collected from other sources that have not been tested here yet.
+> **Status: early.** The method, data format and a first inventory of public rules are published.
+> No lab results have been recorded yet. Nothing here is verified until it appears in
+> [`docs/results.md`](docs/results.md) with evidence.
 
-## What you get
+## Why it matters
+
+- A CISA ransomware advisory names Ligolo and Cloudflared among the tools actors used for
+  tunnelling. In a first survey for this project, no public Sigma rule for Ligolo-ng was found.
+  See [`docs/coverage-inventory.md`](docs/coverage-inventory.md) for what was checked.
+- Most public rules reviewed so far match file names and command-line text. Nobody publishes how
+  they hold up after simple operator changes.
+- Defenders in small teams depend on public rules and cannot test them all.
+
+## What is here
 
 | Part | Location | Contents |
 |---|---|---|
-| Results matrix | [`docs/results.md`](docs/results.md) | Tool x version x variant x detection: fired or not, with a link to evidence |
-| Tool pages | [`tools/`](tools/) | Host and network traces per tool, graded by how well they survive simple operator changes |
-| Detections | [`rules/`](rules/) | Sigma rules and Splunk queries. A rule is added only after it passes the test method |
-| Evidence | [`evidence/`](evidence/) | Sanitised logs and packet captures behind every claim |
-| Method | [`docs/methodology.md`](docs/methodology.md) | How tests are run, so anyone can repeat or challenge a result |
-| Lab | [`docs/lab-setup.md`](docs/lab-setup.md) | The lab design and telemetry sources |
-| Prior art | [`docs/prior-art.md`](docs/prior-art.md) | What already exists and what this adds |
+| Coverage inventory | [`docs/coverage-inventory.md`](docs/coverage-inventory.md) | Which public rule sets have detections for which tool |
+| Results | [`docs/results.md`](docs/results.md), [`docs/results.json`](docs/results.json) | Tool x version x variant x detection: fired or missed, with evidence |
+| Method | [`docs/methodology.md`](docs/methodology.md) | How a test is run, so anyone can repeat or challenge a result |
+| Principles | [`docs/principles.md`](docs/principles.md) | What a result means, what it does not mean, and how the project stays fair |
+| Data format | [`docs/data-format.md`](docs/data-format.md) | The one file that holds every result |
+| Tool pages | [`tools/`](tools/) | Traces per tool, graded by how well they survive simple changes |
+| Lab | [`docs/lab-setup.md`](docs/lab-setup.md) | A lab design that fits on one laptop |
+| Prior art | [`docs/prior-art.md`](docs/prior-art.md) | Related work and what this adds |
+| Plan | [`ROADMAP.md`](ROADMAP.md), [`docs/impact-plan.md`](docs/impact-plan.md) | Scope tiers and the route to adoption |
 
-## Who it is for
+## Contribute
 
-- **Detection engineers and SOC analysts:** which public rules to trust, and behavioural signals to add.
-- **Incident responders:** what these tools leave on disk, in logs and on the wire.
-- **Penetration testers:** what your tooling exposes, so you can tell clients what their SOC should have seen.
+You can help without writing code:
+
+- **Add to the inventory.** Tell us about a public rule we missed.
+- **Submit a result.** Run one test case in your own lab and send the outcome with evidence.
+- **Challenge a result.** Repeat a test and report a different outcome.
+
+Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Scope
 
-First release: **Chisel**, **Ligolo-ng**, and **SSH port forwarding** (OpenSSH and Plink).
-Planned next: DNS tunnelling.
+First release: **Ligolo-ng**, **Chisel**, and **SSH port forwarding** (OpenSSH and Plink).
+Later tiers are listed in [`ROADMAP.md`](ROADMAP.md).
 
-Out of scope: modifying tools to avoid detection. Variants are limited to changes an operator can
-make with the tool's own documented options or by renaming a file. See the method.
+Out of scope: modifying tools to avoid detection, and instructions for using the tools. Variants
+are limited to changes an operator can make with a tool's own documented options or by renaming a
+file.
 
 ## Responsible use
 
-Everything here was produced in an isolated lab that the author owns. No data from client
-networks, training-provider labs or third-party systems is included. The content is intended for
-defence, authorised testing and education.
+Results come from isolated labs that contributors own. No data from client networks,
+training-provider labs or third-party systems is accepted. The content is for defence, authorised
+testing and education. See [`SECURITY.md`](SECURITY.md).
 
 ## Credits
 
-This project was inspired by the trace-based approach of
-[Impacket-IoCs](https://github.com/ThatTotallyRealMyth/Impacket-IoCs) and builds on public rules
-from SigmaHQ and Elastic and on the LOTTunnels catalogue. Sources are listed in
-[`docs/prior-art.md`](docs/prior-art.md).
+Inspired by the trace-based approach of
+[Impacket-IoCs](https://github.com/ThatTotallyRealMyth/Impacket-IoCs). Builds on public rules
+from SigmaHQ, Elastic and Splunk and on the LOTTunnels catalogue.
 
 ## Licence
 
-To be decided before first release. See the note in [`ROADMAP.md`](ROADMAP.md).
+To be decided before the first release. See [`ROADMAP.md`](ROADMAP.md).

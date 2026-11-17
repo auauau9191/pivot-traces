@@ -23,6 +23,20 @@ each release.
    what happens to them after a rename or a port change.
 4. **One place.** Host traces, network traces, rules and evidence for the same test run, together.
 
+## Related projects with a similar shape
+
+| Project | What it shares with this one | Difference |
+|---|---|---|
+| [EDR Telemetry project](https://github.com/tsale/EDR-Telemetry/wiki) | One shared data file, community pull requests, an evidence rule | Compares vendor telemetry, not public rules against tools |
+| [Splunk attack data](https://research.splunk.com/attack_data/24608f3f-bc86-43e1-ab46-4625f94a6cdf/) | Published log datasets tied to detections | Supports one vendor's content |
+| [Impacket-IoCs](https://github.com/ThatTotallyRealMyth/Impacket-IoCs) | Traces of an offensive tool, written for defenders | One library, no results matrix |
+
+A public critique of the EDR Telemetry project
+([Magonia Research](https://www.magonia.io/research/edr-telemetry-project-from-misleading-to-actively-deceptive/))
+shaped the rules in [`principles.md`](principles.md).
+
+See also the tool-by-tool count of public rules in [`coverage-inventory.md`](coverage-inventory.md).
+
 ## Still to check
 
 - Per-tool pages on LOTTunnels.

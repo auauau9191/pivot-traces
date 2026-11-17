@@ -1,0 +1,45 @@
+name: Test result
+description: Submit the outcome of one test case from your own lab
+labels: [result]
+body:
+  - type: input
+    id: tool
+    attributes: {label: Tool and exact version}
+    validations: {required: true}
+  - type: input
+    id: os
+    attributes: {label: Operating system of the host under test}
+    validations: {required: true}
+  - type: input
+    id: scenario
+    attributes: {label: Scenario and variant (V0 to V4)}
+    validations: {required: true}
+  - type: input
+    id: detection
+    attributes: {label: Detection tested (title, source, link, version or commit)}
+    validations: {required: true}
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options: [fired, missed, not-applicable]
+    validations: {required: true}
+  - type: input
+    id: telemetry
+    attributes: {label: Telemetry baseline (for example Sysmon version and configuration)}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Attach sanitised logs or captures. Lab IP ranges only. No real names, keys or tokens.
+    validations: {required: true}
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: The test ran in an isolated lab that I own.
+          required: true
+        - label: The evidence contains no data from client, employer or training-provider systems.
+          required: true
