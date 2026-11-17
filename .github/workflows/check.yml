@@ -1,0 +1,12 @@
+name: check
+on: [push, pull_request]
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Results matrix is valid and up to date
+        run: python3 scripts/matrix_report.py --check
